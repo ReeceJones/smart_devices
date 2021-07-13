@@ -57,11 +57,10 @@ void convertInput(string inFileName, string outFileName)
 		auto vers = ent["fw_version"].toString().strip("\"").split(".");
 		string smac = ent["mac_address"].toString().strip("\"");
 		ulong mac = 0;
-		int i = 0;
+		int i = 5;
 		foreach (string tok; smac.split(":"))
 		{
-			writeln(tok);
-			mac = mac | (tok.to!ulong(16) << (i++ * 8));
+			mac = mac | (tok.to!ulong(16) << (i-- * 8));
 		}
 		Entry e;
 		e.mac = mac;
@@ -78,12 +77,47 @@ void convertInput(string inFileName, string outFileName)
 	auto f = File(outFileName, "w");
 	f.rawWrite([h]);
 	f.rawWrite(entries);
+	f.close();
 }
 
-
-void main()
+void verify(string fileName)
 {
-	writeln(Header.sizeof);
-	writeln(Entry.sizeof);
-	convertInput("input.json", "out.bin");
+	auto f = File(fileName, "r");
+	Header header = f.rawRead(new Header[1])[0];
+	Entry[] entries = f.rawRead(new Entry[header.numDevices]);
+	ubyte[32] hash = cast(ubyte[32])sha256Of(cast(void[])entries);
+	writeln("header hash: ", header.hash.toHexString, "\ncomputed hash: ", hash.toHexString);
+	if (header.hash.toHexString != hash.toHexString)
+	{
+		writeln("HASHES DO NOT MATCH!!!");
+	}
+	foreach (Entry entry; entries)
+	{
+		string mac = entry.mac.to!string(16);
+		string formatted_mac = mac[0..2];
+		for (int i = 2; i < mac.length-1; i+=2)
+		{
+			formatted_mac = formatted_mac ~ ":" ~ mac[i..i+2];
+		}
+		writeln((cast(char*)&entry.name).fromStringz(), " : ", formatted_mac);
+	}
+	f.close();
+}
+
+void main(string[] args)
+{
+	if (args.length >= 3 && args[1] == "--verify")
+	{
+		verify(args[2]);
+	}
+	else if (args.length >= 4 && args[1] == "--convert")
+	{
+		convertInput(args[2], args[3]);
+	}
+	else
+	{
+		writeln("unknown options");
+	}
+	// convertInput("input.json", "out.bin");
+	// verify("out.bin");
 }
