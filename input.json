@@ -1,0 +1,24 @@
+{
+   "devices" : [
+        {
+            "name": "thermostat",
+            "mac_address": "9f:4b:22:79:12:cb",
+            "fw_version": "2.2a"
+        },
+        {
+            "name": "doorbell",
+            "mac_address": "f6:dd:3d:6e:ae:13",
+            "fw_version": "7.0"
+        },
+        {
+            "name": "camera",
+            "mac_address": "61:30:66:a6:55:61",
+            "fw_version": "1.7"
+        },
+        {
+            "name": "light",
+            "mac_address": "96:2b:f6:c7:e9:c9",
+            "fw_version": "2.0"
+        }
+    ]
+}
