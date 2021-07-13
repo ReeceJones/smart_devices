@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/smart_devices
+smart_devices.so
+smart_devices.dylib
+smart_devices.dll
+smart_devices.a
+smart_devices.lib
+smart_devices-test-*
+*.exe
+*.o
+*.obj
+*.lst
